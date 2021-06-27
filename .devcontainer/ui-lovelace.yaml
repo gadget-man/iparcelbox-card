@@ -1,0 +1,9 @@
+resources:
+  - url: http://127.0.0.1:5000/iparcelbox-card.js
+    type: module
+views:
+  - cards:
+      - type: custom:iparcelbox-card
+        name: iParcelBox Card Development
+        device: iParcelBox-1234567
+        test_gui: true
