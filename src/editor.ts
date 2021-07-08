@@ -190,8 +190,9 @@ export class BoilerplateCardEditor extends LitElement implements LovelaceCardEdi
     }
 
     const target = ev.target;
-
+    // console.log("Update target: " + target.configValue);
     const value = ev.detail?.value ?? target.value;
+    // console.log("Update value: " + value);
     if (target.configValue) {
       if (value === '') {
         delete this._config[target.configValue];

@@ -341,7 +341,8 @@ export class IParcelBoxCard extends LitElement {
     .button:hover  ha-label-badge{
       --label-badge-background-color: #2A5F83;
         --label-badge-text-color: white;
-        --ha-label-badge-color: #EE7203;
+        --ha-label-badge-color: #afc0c9;
+        /* --ha-label-badge-color: #043454; */
         --ha-label-badge-title-width: 100px;
         --ha-label-badge-title-font-weight: 600
     }
@@ -349,7 +350,7 @@ export class IParcelBoxCard extends LitElement {
       cursor: wait;
       --label-badge-background-color: green;
         --label-badge-text-color: white;
-        --ha-label-badge-color: #043454;
+        --ha-label-badge-color: #EE7203;
         --ha-label-badge-title-width: 100px;
         --ha-label-badge-title-font-weight: 500
     }
@@ -385,7 +386,7 @@ export class IParcelBoxCard extends LitElement {
       attributes: attributes,
       buttons: buttons,
       styles: {
-        background: config.image == 'none' ? 'color: black  ' : config.image ? `background-image: url('${config.image}'); color: white; text - shadow: 0 0 10px black;` : `background-image: url('${defaultImage}'); color: white; text - shadow: 0 0 10px black;`,
+        background: config.image == 'none' ? 'color: var(--primary-text-color)  ' : config.image ? `background-image: url('${config.image}'); color: white; text - shadow: 0 0 10px black;` : `background-image: url('${defaultImage}'); color: white; text - shadow: 0 0 10px black;`,
         icon: `color: ${config.image == 'none' ? 'var(--paper-item-icon-color)' : 'white'};`,
         content: `padding: ${config.name ? '8px' : '16px'} 16px ${config.buttons !== false ? '8px' : '16px'};`,
       },
@@ -505,7 +506,7 @@ export class IParcelBoxCard extends LitElement {
 
       <ha-card
         class="background"
-        tabindex="0"
+        @action=${this._handleAction}
         style="${this.config.styles.background}"
       >
       ${this.config.show.name ?
@@ -544,10 +545,11 @@ export class IParcelBoxCard extends LitElement {
 
   // https://lit-element.polymer-project.org/guide/styles
   renderLabel(data): any {
-    // console.log("RenderAttribute: " + JSON.stringify(data))
+    console.log("RenderLabel: " + JSON.stringify(data))
     const deviceId = this.config.device_name;
     const mac = deviceId.split("-")
     const sensor = data.type + ".iparcelbox_" + mac[1] + "_" + data.key
+    console.log("Render label for sensor: " + sensor);
     const value = this._hass.states[sensor].state
     // console.log("Label: " + sensor + " (" + value + ")")
     // console.log("LabelData: " + JSON.stringify(this._hass.states[sensor]))
@@ -619,6 +621,12 @@ export class IParcelBoxCard extends LitElement {
 
   }
 
+  private _handleAction(): void {
+    console.log("Calling handle action");
+    // if (this.hass && this.config && ev.detail.action) {
+    //   handleAction(this, this.hass, this.config, ev.detail.action);
+    // }
+  }
 
   renderStatus(data): any {
     const deviceId = this.config.device_name;
