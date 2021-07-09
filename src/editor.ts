@@ -201,7 +201,7 @@ export class BoilerplateCardEditor extends LitElement implements LovelaceCardEdi
           const device = await this.getDeviceDetails(this.hass, value);
           this._config = {
             ...this._config,
-            "device_name": device.name,
+            "device_name": device.name_by_user ? device.name_by_user?.replace(/ |-/g,"_").toLowerCase() : device.name?.replace(/ |-/g,"_").toLowerCase(),
           };
         }
         this._config = {

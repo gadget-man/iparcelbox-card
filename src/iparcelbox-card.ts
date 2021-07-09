@@ -399,18 +399,19 @@ export class IParcelBoxCard extends LitElement {
   getEntities(): any {
     const newEntities: EntityList = [];
     const deviceId = this.config.device_name;
-    const mac = deviceId.split("-")[1]
+    // console.log("Got Device ID: " + deviceId);
+    // const mac = deviceId //.split("-")[1]
 
     const e = {
       type: "sensor",
-      entity: "sensor.iparcelbox_" + mac + "_boxstatus"
+      entity: "sensor." + deviceId + "_boxstatus"
     }
     newEntities.push(e);
 
     Object.keys(this.config.status).forEach(key => {
       const e = {
         type: this.config.status[key]["type"],
-        entity: this.config.status[key]["type"] + ".iparcelbox_" + mac + "_" + this.config.status[key]["key"],
+        entity: this.config.status[key]["type"] + "." + deviceId + "_" + this.config.status[key]["key"],
       };
       newEntities.push(e)
     });
@@ -419,7 +420,7 @@ export class IParcelBoxCard extends LitElement {
       Object.keys(this.config.attributes.right).forEach(key => {
         const e = {
           type: this.config.attributes.right[key]["type"],
-          entity: this.config.attributes.right[key]["type"] + ".iparcelbox_" + mac + "_" + this.config.attributes.right[key]["key"],
+          entity: this.config.attributes.right[key]["type"] + "." + deviceId + "_" + this.config.attributes.right[key]["key"],
         };
         newEntities.push(e)
       });
@@ -431,8 +432,10 @@ export class IParcelBoxCard extends LitElement {
 
   set hass(hass) {
     const deviceId = this.config.device_name;
-    const mac = deviceId.split("-")
-    const statusSensor = "sensor.iparcelbox_" + mac[1] + "_boxstatus"
+    // const mac = deviceId.split("-")
+    // const statusSensor = "sensor.iparcelbox_" + mac[1] + "_boxstatus"
+
+    const statusSensor = "sensor." + deviceId + "_boxstatus"
 
     if (hass && this.config) {
         this.stateObj = statusSensor in hass.states ? hass.states[statusSensor] : null;
@@ -545,11 +548,11 @@ export class IParcelBoxCard extends LitElement {
 
   // https://lit-element.polymer-project.org/guide/styles
   renderLabel(data): any {
-    console.log("RenderLabel: " + JSON.stringify(data))
+    // console.log("RenderLabel: " + JSON.stringify(data))
     const deviceId = this.config.device_name;
-    const mac = deviceId.split("-")
-    const sensor = data.type + ".iparcelbox_" + mac[1] + "_" + data.key
-    console.log("Render label for sensor: " + sensor);
+    // const mac = deviceId.split("-")
+    const sensor = data.type + "." + deviceId + "_" + data.key
+    // console.log("Render label for sensor: " + sensor);
     const value = this._hass.states[sensor].state
     // console.log("Label: " + sensor + " (" + value + ")")
     // console.log("LabelData: " + JSON.stringify(this._hass.states[sensor]))
@@ -563,9 +566,9 @@ export class IParcelBoxCard extends LitElement {
   renderAttribute(data): any {
     // console.log("RenderAttribute: " + JSON.stringify(data))
     const deviceId = this.config.device_name;
-    const mac = deviceId.split("-")
-    const sensor = data.type + ".iparcelbox_" + mac[1] + "_" + data.key
-    const sensor2 = data.key2 ? data.type2 + ".iparcelbox_" + mac[1] + "_" + data.key2 : null
+    // const mac = deviceId.split("-")
+    const sensor = data.type + "." + deviceId + "_" + data.key
+    const sensor2 = data.key2 ? data.type2 + "." + deviceId + "_" + data.key2 : null
     const isBattery = data.key == 'battery' ? true : false
     const isSleep = data.key == 'asleep' ? true : false
 
@@ -630,8 +633,10 @@ export class IParcelBoxCard extends LitElement {
 
   renderStatus(data): any {
     const deviceId = this.config.device_name;
-    const mac = deviceId.split("-")[1]
-    const sensorId = data.type + ".iparcelbox_" + mac + "_" + data.key
+    // const mac = deviceId.split("-")[1]
+    // const sensorId = data.type + ".iparcelbox_" + mac + "_" + data.key
+
+    const sensorId = data.type + "." + deviceId + "_" + data.key
 
     const computeFunc = data.compute || (v => v);
 
