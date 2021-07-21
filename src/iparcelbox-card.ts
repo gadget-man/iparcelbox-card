@@ -118,6 +118,10 @@ const header = {
     unknown: {
       icon: 'iparcelbox:icon',
       label: 'Unable to retrieve status'
+    },
+    unavailable: {
+      icon: 'iparcelbox:icon',
+      label: 'Unable to retrieve status'
     }
   },
 };
@@ -446,6 +450,7 @@ export class IParcelBoxCard extends LitElement {
 
 
   callService(service, key, data = { 'device_id': this.config.device_id }): void {
+    // console.log("Call service: " + this.config.device_id);
     this.activeButton(key);
     const [domain, name] = service.split('.');
     this._hass.callService(domain, name, data);
@@ -674,6 +679,7 @@ export class IParcelBoxCard extends LitElement {
 
 
   renderButton(data): any {
+    // console.log("Button data: " + data.key + " " + data.service);
     return data && data.show !== false
       ? html`<div class="button" id="${data.key}"><ha-label-badge
             icon="${data.icon}"
