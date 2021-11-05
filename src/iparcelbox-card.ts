@@ -338,7 +338,7 @@ export class IParcelBoxCard extends LitElement {
         --label-badge-background-color: #043454;
         --label-badge-text-color: white;
         --ha-label-badge-color: #afc0c9;
-        --ha-label-badge-title-width: 100px;
+        --ha-label-badge-title-width: 120px;
         --ha-label-badge-title-font-weight: 500
         cursor: default;
     }
@@ -347,7 +347,7 @@ export class IParcelBoxCard extends LitElement {
         --label-badge-text-color: white;
         --ha-label-badge-color: #afc0c9;
         /* --ha-label-badge-color: #043454; */
-        --ha-label-badge-title-width: 100px;
+        --ha-label-badge-title-width: 120px;
         --ha-label-badge-title-font-weight: 600
     }
     .active  ha-label-badge{
@@ -355,7 +355,7 @@ export class IParcelBoxCard extends LitElement {
       --label-badge-background-color: green;
         --label-badge-text-color: white;
         --ha-label-badge-color: #EE7203;
-        --ha-label-badge-title-width: 100px;
+        --ha-label-badge-title-width: 120px;
         --ha-label-badge-title-font-weight: 500
     }
     .hidden {
@@ -672,9 +672,10 @@ export class IParcelBoxCard extends LitElement {
 
   renderStatusIcon(data): any {
       return html`<span class="statusIcon"><ha-label-badge
-                   icon="${data.icon}"
                    style="margin-right: 5px;  ${this.config.styles.icon}"
-                   ></ha-label-badge></span>`;
+                   >
+                   <ha-icon icon="${data.icon}"></ha-icon>
+                   </ha-label-badge></span>`;
   }
 
 
@@ -682,10 +683,11 @@ export class IParcelBoxCard extends LitElement {
     // console.log("Button data: " + data.key + " " + data.service);
     return data && data.show !== false
       ? html`<div class="button" id="${data.key}"><ha-label-badge
-            icon="${data.icon}"
             @click="${() => this.callService(data.service, data.key)}"
             description="${data.label || ''}"
-            style="${this.config.styles.icon}"></ha-label-badge></div>`
+            style="${this.config.styles.icon}">
+            <ha-icon icon="${data.icon}"></ha-icon>
+  </ha-label-badge></div>`
         : null;
   }
   //
