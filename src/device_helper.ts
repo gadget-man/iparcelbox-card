@@ -26,6 +26,9 @@ export const getConfigEntries = (hass: HomeAssistant) =>
 export const filterDevice = (devices: DeviceRegistryEntry[], deviceId: string) =>
     devices.filter((device) => device.id === deviceId);
 
+export const filterManufacturer = (devices: DeviceRegistryEntry[], manufacturer: string) =>
+    devices.filter((device) => device.manufacturer === manufacturer);
+
 export interface DeviceRegistryEntry {
     id: string;
     config_entries: string[];

@@ -2,14 +2,13 @@
 import {
   LitElement,
   html,
-  customElement,
-  property,
   CSSResult,
   TemplateResult,
   css,
   PropertyValues,
-  internalProperty,
-} from 'lit-element';
+} from 'lit';
+import { customElement, property, state } from 'lit/decorators';
+
 import {
   HomeAssistant,
   hasConfigOrEntityChanged,
@@ -20,17 +19,17 @@ import {
   getLovelace,
 } from 'custom-card-helpers'; // This is a community maintained npm module with common helper functions/types
 
-import './editor';
+// import './editor';
 import { icons, defaultImage } from './icons'
 
 import type { ParcelBoxCardConfig, EntityList, LovelaceRowConfig } from './types';
 import { CARD_VERSION } from './const';
-import { localize } from './localize/localize';
+// import { localize } from './localize/localize';
 import { entitiesColl } from 'home-assistant-js-websocket';
 
 /* eslint no-console: 0 */
 console.info(
-  `%c  IPARCELBOX-CARD \n%c  ${localize('common.version')} ${CARD_VERSION}    `,
+  `%c  IPARCELBOX-CARD Version ${CARD_VERSION}    `,
   'color: orange; font-weight: bold; background: black',
   'color: white; font-weight: bold; background: dimgray',
 );
@@ -234,7 +233,9 @@ const buttons = {
 export class IParcelBoxCard extends LitElement {
 
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import('./editor');
     return document.createElement('boilerplate-card-editor');
+
   }
 
   public static getStubConfig(): object {
@@ -243,10 +244,10 @@ export class IParcelBoxCard extends LitElement {
 
 
   @property({ attribute: false }) public _hass!: HomeAssistant;
-  @internalProperty() private config!: ParcelBoxCardConfig;
+  @state() private config!: ParcelBoxCardConfig;
   @property() stateObj;
   @property() isAsleep;
-  @internalProperty() private buttonTimeout: any;
+  @state() private buttonTimeout: any;
 
 
   static get styles(): CSSResult {
@@ -368,7 +369,7 @@ export class IParcelBoxCard extends LitElement {
   public setConfig(config: ParcelBoxCardConfig): void {
     // TODO Check for required fields and that they are of the proper format
     if (!config.device_name) {
-      throw new Error(localize('common.invalid_configuration'));
+      throw new Error('Invalid configuration');
     }
 
     if (config.test_gui) {
