@@ -2,14 +2,12 @@
 import {
   LitElement,
   html,
-  customElement,
-  property,
   CSSResult,
   TemplateResult,
   css,
   PropertyValues,
-  internalProperty,
-} from 'lit-element';
+} from 'lit';
+import { customElement, property, state } from 'lit/decorators';
 import {
   HomeAssistant,
   hasConfigOrEntityChanged,
@@ -243,10 +241,10 @@ export class IParcelBoxCard extends LitElement {
 
 
   @property({ attribute: false }) public _hass!: HomeAssistant;
-  @internalProperty() private config!: ParcelBoxCardConfig;
+  @state() private config!: ParcelBoxCardConfig;
   @property() stateObj;
   @property() isAsleep;
-  @internalProperty() private buttonTimeout: any;
+  @state() private buttonTimeout: any;
 
 
   static get styles(): CSSResult {
