@@ -25,11 +25,11 @@ You can configure this custom-card using the UI. Simply select the device from t
 
 <img style="border: 5px solid #767676;border-radius: 10px;max-width: 350px;width: 100%;box-sizing: border-box;" src="https://github.com/gadget-man/iparcelbox-card/blob/master/examples/Card_Config.png" alt="Configuration">
 
-Alternatively you can manually add the integration and provide the relevant Device name, Device ID and other settings:
+Alternatively you can manually add the integration and provide the relevant Device name (note it should be an underscore, not dash), Device ID and other settings:
 
 ```yaml
 type: custom:iparcelbox-card
-device_name: iParcelBox-XXXXXXXX
+device_name: iParcelBox_XXXXXXXX
 device_id: XXXXXXXX
 name: Front Driveway
 show_header: true
