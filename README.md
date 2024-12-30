@@ -57,7 +57,7 @@ By default, the custom-card will display a generic background. Select your own b
 
 ## iParcelBox Premium Subscription
 
-An iParcelBox Premium subscription is required to connect your iParcelBox device to Home Assistant. More details can be found at https://www.iparcelbox.com/faqs/#premium
+UPDATED: an iParcelBox Premium subscription is no longer required to connect your iParcelBox device to Home Assistant. If you have an existing iParcelBox and it won't connect, please contact support@iparcelbox.com and we will enable this for you.
 
 ## Manual installation
 
