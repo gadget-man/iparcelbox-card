@@ -507,7 +507,7 @@ export class IParcelBoxCard extends LitElement {
 
    // https://lit-element.polymer-project.org/guide/templates
   protected render(): TemplateResult | void {
-    console.log("State: " + JSON.stringify(this.config.state))
+    // console.log("State: " + JSON.stringify(this.config.state))
     // this.clearButtons(this);
 
     return html`
@@ -572,8 +572,8 @@ export class IParcelBoxCard extends LitElement {
     const sensor = data.type + "." + deviceId + "_" + data.key
     console.log("Render label for sensor: " + sensor);
     const value = this._getStateString(sensor);
-    // console.log("Label: " + sensor + " (" + value + ")")
-    // console.log("LabelData: " + JSON.stringify(this._hass.states[sensor]))
+    console.log("Label: " + sensor + " (" + value + ")")
+    console.log("LabelData: " + JSON.stringify(this._hass.states[sensor]))
 
     // If the entity doesn't exist (or is unknown/unavailable), don't crash the card.
     if (!value) {
