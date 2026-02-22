@@ -507,7 +507,7 @@ export class IParcelBoxCard extends LitElement {
 
    // https://lit-element.polymer-project.org/guide/templates
   protected render(): TemplateResult | void {
-    // console.log("State: " + JSON.stringify(this.config.state))
+    console.log("State: " + JSON.stringify(this.config.state))
     // this.clearButtons(this);
 
     return html`
@@ -566,7 +566,7 @@ export class IParcelBoxCard extends LitElement {
   }
 
   renderLabel(data): any {
-    console.log("RenderLabel: " + JSON.stringify(data))
+    // console.log("RenderLabel: " + JSON.stringify(data))
     const deviceId = this.config.device_name;
     // const mac = deviceId.split("-")
     const sensor = data.type + "." + deviceId + "_" + data.key
@@ -588,7 +588,7 @@ export class IParcelBoxCard extends LitElement {
 
   // https://lit-element.polymer-project.org/guide/styles
   renderAttribute(data): any {
-    // console.log("RenderAttribute: " + JSON.stringify(data))
+    console.log("RenderAttribute: " + JSON.stringify(data))
     const deviceId = this.config.device_name;
     // const mac = deviceId.split("-")
     const sensor = data.type + "." + deviceId + "_" + data.key
