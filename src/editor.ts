@@ -37,7 +37,9 @@ export class BoilerplateCardEditor extends ScopedRegistryHost(LitElement) implem
   @state() private _helpers?: any;
   private _initialized = false;
 
-  private devices: DeviceRegistryEntry[] = [];
+  @state() private _devices: DeviceRegistryEntry[] = [];
+  @state() private _devicePickerLoading = false;
+  private _devicePickerLoaded = false;
 
   static elementDefinitions = {
     ...textfieldDefinition,
@@ -54,21 +56,40 @@ export class BoilerplateCardEditor extends ScopedRegistryHost(LitElement) implem
 
 
   firstUpdated() {
-    // Elements can only be added to the local customElement registry after
-    // createRenderRoot has run(which ScopedRegistryRoot handles).
-    // It's definitely run before first render, so firstUpdated can be a good
-    // place to start loading elements.
+    // `hass` is often assigned AFTER first render/firstUpdated.
+    // This call is harmless if hass isn't ready yet.
     this.loadDevicePicker();
   }
 
-  async loadDevicePicker() {
-    // console.log("Loading device picker");
+  protected updated(changedProps: Map<string, unknown>): void {
+    // On first load, HA sets `hass` after the element is created.
+    // Re-attempt loading once `hass` arrives.
+    if (changedProps.has('hass')) {
+      this.loadDevicePicker();
+    }
+  }
 
-    if (this.hass) {
-      this.devices = await this.hass.callWS({
+  async loadDevicePicker() {
+    // If hass isn't available yet, bail out; `updated()` will retry when hass is set.
+    if (!this.hass) return;
+
+    // Prevent duplicate/in-flight loads and avoid reloading if already loaded.
+    if (this._devicePickerLoading || this._devicePickerLoaded) return;
+
+    this._devicePickerLoading = true;
+    try {
+      const devices = await this.hass.callWS<DeviceRegistryEntry[]>({
         type: 'config/device_registry/list',
       });
-    };
+      this._devices = devices || [];
+      this._devicePickerLoaded = true;
+    } catch (err) {
+      // Leave loaded=false so we can retry later.
+      // eslint-disable-next-line no-console
+      console.warn('iparcelbox-card editor: failed to load device registry', err);
+    } finally {
+      this._devicePickerLoading = false;
+    }
   }
 
   protected shouldUpdate(): boolean {
@@ -117,8 +138,7 @@ export class BoilerplateCardEditor extends ScopedRegistryHost(LitElement) implem
       return html``;
     }
 
-    const selector = { device: { integration: 'iparcelbox' } };
-    const deviceList: DeviceRegistryEntry[] = filterManufacturer(this.devices, 'iParcelBox Ltd')
+    const deviceList: DeviceRegistryEntry[] = filterManufacturer(this._devices, 'iParcelBox Ltd');
 
     return html`
       <div class="card-config">
