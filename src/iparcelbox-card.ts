@@ -5,8 +5,8 @@ import {
   CSSResult,
   TemplateResult,
   css,
-} from 'lit-element';
-import { customElement, property, state } from 'lit/decorators';
+} from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 import {
   HomeAssistant,
   LovelaceCardEditor,
