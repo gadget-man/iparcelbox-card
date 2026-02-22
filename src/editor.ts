@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/camelcase */
 import {
   LitElement,
   html,
   TemplateResult,
   CSSResult,
   css,
-} from 'lit-element';
+} from 'lit';
 import { customElement, property, state } from 'lit/decorators';
 import { HomeAssistant, fireEvent, LovelaceCardEditor } from 'custom-card-helpers';
 import { ParcelBoxCardConfig } from './types';

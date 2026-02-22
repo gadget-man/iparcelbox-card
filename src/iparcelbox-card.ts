@@ -5,15 +5,10 @@ import {
   CSSResult,
   TemplateResult,
   css,
-  PropertyValues,
-} from 'lit';
+} from 'lit-element';
 import { customElement, property, state } from 'lit/decorators';
 import {
   HomeAssistant,
-  hasConfigOrEntityChanged,
-  hasAction,
-  ActionHandlerEvent,
-  handleAction,
   LovelaceCardEditor,
   getLovelace,
 } from 'custom-card-helpers'; // This is a community maintained npm module with common helper functions/types
@@ -21,10 +16,9 @@ import {
 import './editor';
 import { icons, defaultImage } from './icons'
 
-import type { ParcelBoxCardConfig, EntityList, LovelaceRowConfig } from './types';
+import type { ParcelBoxCardConfig, EntityList } from './types';
 import { CARD_VERSION } from './const';
 import { localize } from './localize/localize';
-import { entitiesColl } from 'home-assistant-js-websocket';
 
 /* eslint no-console: 0 */
 console.info(
@@ -625,9 +619,11 @@ export class IParcelBoxCard extends LitElement {
 
     let attribute = html`<div>${data.icon && this.renderIcon(data)}${(data.label || '') + primaryState + (data.unit || '')}</div>`;
     if (isBattery) {
-      primaryState != 'Not installed'
-        ? attribute = html`<div>${data.icon && this.renderBatteryIcon(icontype)}${(data.label || '') + primaryState + (data.unit || '')}</div>`
-        : attribute = html``;
+      if (primaryState !== 'Not installed') {
+        attribute = html`<div>${data.icon && this.renderBatteryIcon(icontype)}${(data.label || '') + primaryState + (data.unit || '')}</div>`;
+      } else {
+        attribute = html``;
+      }
     } else if (data.key == 'asleep') {
       if (primaryState === 'True') {
         this.isAsleep = true;
