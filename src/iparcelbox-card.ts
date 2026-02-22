@@ -433,18 +433,20 @@ export class IParcelBoxCard extends LitElement {
 
 
   set hass(hass) {
-    const deviceId = this.config.device_name;
-    // const mac = deviceId.split("-")
-    // const statusSensor = "sensor.iparcelbox_" + mac[1] + "_boxstatus"
-
-    const statusSensor = "sensor." + deviceId + "_boxstatus"
-
-    if (hass && this.config) {
-        this.stateObj = statusSensor in hass.states ? hass.states[statusSensor] : null;
-    }
     this._hass = hass;
 
-}
+    // `hass` can be assigned before setConfig() runs.
+    if (!hass || !this.config?.device_name) {
+      this.stateObj = null;
+      return;
+    }
+
+    const deviceId = this.config.device_name;
+    const statusSensor = `sensor.${deviceId}_boxstatus`;
+    console.log("Setting hass, looking for iParcelBox sensor: " + statusSensor);
+    this.stateObj = statusSensor in hass.states ? hass.states[statusSensor] : null;
+  }
+
 
 
   callService(service, key, data = { 'device_id': this.config.device_id }): void {
@@ -452,7 +454,7 @@ export class IParcelBoxCard extends LitElement {
     this.activeButton(key);
     const [domain, name] = service.split('.');
     this._hass.callService(domain, name, data);
-}
+  }
 
   activeButton(x): any {
     Object.keys(this.config.buttons).forEach(key => {
@@ -550,17 +552,36 @@ export class IParcelBoxCard extends LitElement {
 
 
   // https://lit-element.polymer-project.org/guide/styles
+  private _getState(entityId: string) {
+    return this._hass?.states ? this._hass.states[entityId] : undefined;
+  }
+
+  private _getStateString(entityId: string): string | undefined {
+    const st = this._getState(entityId);
+    const v = st?.state;
+    if (v === undefined || v === null) return undefined;
+    // HA commonly uses these sentinel values; treat them as missing for UI safety.
+    if (v === 'unknown' || v === 'unavailable') return undefined;
+    return String(v);
+  }
+
   renderLabel(data): any {
-    // console.log("RenderLabel: " + JSON.stringify(data))
+    console.log("RenderLabel: " + JSON.stringify(data))
     const deviceId = this.config.device_name;
     // const mac = deviceId.split("-")
     const sensor = data.type + "." + deviceId + "_" + data.key
-    // console.log("Render label for sensor: " + sensor);
-    const value = this._hass.states[sensor].state
+    console.log("Render label for sensor: " + sensor);
+    const value = this._getStateString(sensor);
     // console.log("Label: " + sensor + " (" + value + ")")
     // console.log("LabelData: " + JSON.stringify(this._hass.states[sensor]))
 
-    const attribute = html`<div>${(data[value].label || '')}</div>`;
+    // If the entity doesn't exist (or is unknown/unavailable), don't crash the card.
+    if (!value) {
+      const fallbackLabel = data?.unknown?.label || data?.unavailable?.label || 'Unable to retrieve status';
+      return html`<div>${fallbackLabel}</div>`;
+    }
+
+    const attribute = html`<div>${(data[value]?.label || data?.unknown?.label || '')}</div>`;
 
     return attribute
   }
@@ -575,52 +596,61 @@ export class IParcelBoxCard extends LitElement {
     const isBattery = data.key == 'battery' ? true : false
     const isSleep = data.key == 'asleep' ? true : false
 
+    const primaryState = this._getStateString(sensor);
+    const secondaryState = sensor2 ? this._getStateString(sensor2) : undefined;
+
+    // If we can't read the primary entity, render nothing rather than crashing.
+    if (!primaryState) {
+      return html``;
+    }
+
+
+
     // CALCULATE ICON
     let icontype = ""
     if (isBattery) {
       icontype = "mdi:battery"
-      const batteryLevel = Math.ceil((parseInt(this._hass.states[sensor].state))/10)*10;
+      const batteryLevel = Math.ceil((parseInt(primaryState)) / 10) * 10;
       // const isCharging = this._hass.states[sensor2].state == 'On' ? 'Charging' : ''
 
       if (sensor2) {
-        icontype += this._hass.states[sensor2].state == 'On' ? '-charging' : '';
+        icontype += secondaryState === 'On' ? '-charging' : '';
       }
       // console.log("Battery Level: " + batteryLevel);
       if (batteryLevel < 100) {
         icontype += '-' + batteryLevel
       }
-      if (this._hass.states[sensor].state == 'Not installed') {
+      if (primaryState === 'Not installed') {
         icontype = "mdi:battery-off"
       }
     }
     if (isSleep) {
       icontype = "mdi:sleep"
 
-      if (this._hass.states[sensor].state == 'False') {
+      if (primaryState === 'False') {
         // icontype += "-off"
-        icontype=""
+        icontype = ""
       }
     }
     // console.log("Icon: " + icontype)
 
-    let attribute = html`<div>${data.icon && this.renderIcon(data)}${(data.label || '') + this._hass.states[sensor].state + (data.unit || '')}</div>`;
+    let attribute = html`<div>${data.icon && this.renderIcon(data)}${(data.label || '') + primaryState + (data.unit || '')}</div>`;
     if (isBattery) {
-        this._hass.states[sensor].state != 'Not installed' ?
-          attribute = html`<div>${data.icon && this.renderBatteryIcon(icontype)}${(data.label || '') + this._hass.states[sensor].state + (data.unit || '')}</div>`
-          :
-          attribute = html``
+      primaryState != 'Not installed'
+        ? attribute = html`<div>${data.icon && this.renderBatteryIcon(icontype)}${(data.label || '') + primaryState + (data.unit || '')}</div>`
+        : attribute = html``;
     } else if (data.key == 'asleep') {
-      if (this._hass.states[sensor].state == 'True') {
+      if (primaryState === 'True') {
         this.isAsleep = true;
 
         attribute = html`<div>${data.icon && this.renderBatteryIcon(icontype)}${(data.label || '') + 'Asleep'}</div>`
       } else {
         this.isAsleep = false;
-        attribute = html``
+        attribute = html``;
       }
 
     } else if (sensor2) {
-      attribute = html`<div>${data.icon && this.renderIcon(data)}${(data.label || '') + this._hass.states[sensor].state + (data.unit || '') + ' (' + this._hass.states[sensor2].state + (data.unit2 || '') + ')'}</div>`;
+      attribute = html`<div>${data.icon && this.renderIcon(data)}${(data.label || '') + primaryState + (data.unit || '') + ' (' + (secondaryState ?? '') + (data.unit2 || '') + ')'}</div>`;
     }
 
     return attribute
@@ -642,13 +672,19 @@ export class IParcelBoxCard extends LitElement {
     const sensorId = data.type + "." + deviceId + "_" + data.key
 
     const computeFunc = data.compute || (v => v);
+        const stateStr = this._getStateString(sensorId);
+    if (!stateStr) {
+      // Render a safe placeholder when the entity doesn't exist / isn't available.
+      return html`<div>${data.icon && this.renderStatusIcon(data)}<span class="statusText">${data.label || ''}—</span></div>`;
+    }
 
-    const value = computeFunc(this._hass.states[sensorId].state + (data.unit || ''));
-    const statusOptions = (data[this._hass.states[sensorId].state] ? true : false)
+
+    const value = computeFunc(stateStr + (data.unit || ''));
+    const statusOptions = (data[stateStr] ? true : false);
 
 
     const status = statusOptions ?
-      html`<div class="${data[this._hass.states[sensorId].state].color}">${data[this._hass.states[sensorId].state].icon && this.renderStatusIcon(data[this._hass.states[sensorId].state])}<span class="statusText">${data[this._hass.states[sensorId].state].label}</span></div>`
+      html`<div class="${data[stateStr].color}">${data[stateStr].icon && this.renderStatusIcon(data[stateStr])}<span class="statusText">${data[stateStr].label}</span></div>`
       :
       data.key == 'parcelcount' ?
         html`<div class="${value == 0 ? 'green' : 'red'}">${data.icon && this.renderStatusIcon(data)}<span class="statusText">${value} ${value == 1 ? `parcel` : `parcels`}</span></div>`
