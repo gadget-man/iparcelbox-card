@@ -443,7 +443,7 @@ export class IParcelBoxCard extends LitElement {
 
     const deviceId = this.config.device_name;
     const statusSensor = `sensor.${deviceId}_boxstatus`;
-    console.log("Setting hass, looking for iParcelBox sensor: " + statusSensor);
+    console.log("Setting iParcelBox sensor: " + statusSensor);
     this.stateObj = statusSensor in hass.states ? hass.states[statusSensor] : null;
   }
 
@@ -570,10 +570,10 @@ export class IParcelBoxCard extends LitElement {
     const deviceId = this.config.device_name;
     // const mac = deviceId.split("-")
     const sensor = data.type + "." + deviceId + "_" + data.key
-    console.log("Render label for sensor: " + sensor);
+    // console.log("Render label for sensor: " + sensor);
     const value = this._getStateString(sensor);
-    console.log("Label: " + sensor + " (" + value + ")")
-    console.log("LabelData: " + JSON.stringify(this._hass.states[sensor]))
+    // console.log("Label: " + sensor + " (" + value + ")")
+    // console.log("LabelData: " + JSON.stringify(this._hass.states[sensor]))
 
     // If the entity doesn't exist (or is unknown/unavailable), don't crash the card.
     if (!value) {
@@ -588,7 +588,7 @@ export class IParcelBoxCard extends LitElement {
 
   // https://lit-element.polymer-project.org/guide/styles
   renderAttribute(data): any {
-    console.log("RenderAttribute: " + JSON.stringify(data))
+    // console.log("RenderAttribute: " + JSON.stringify(data))
     const deviceId = this.config.device_name;
     // const mac = deviceId.split("-")
     const sensor = data.type + "." + deviceId + "_" + data.key
